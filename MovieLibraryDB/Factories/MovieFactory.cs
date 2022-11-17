@@ -14,20 +14,8 @@ public class MovieFactory : IMovieFactory
 
     public Movie CreateMovie(string? title, DateTime releaseDate)
     {
-        long newId;
-        
-        try
-        {
-            newId = _repository.GetAll().Last().Id + 1;
-        }
-        catch (Exception)
-        {
-            newId = 1;
-        }
-
         return new Movie
         {
-            Id = newId,
             Title = title,
             ReleaseDate = releaseDate
         };

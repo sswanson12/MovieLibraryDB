@@ -5,9 +5,9 @@ namespace MovieLibraryDB.Services;
 
 public class MainService : IMainService
 {
-    private IRepository _repository;
-    private IConsoleService _consoleService;
-    private IMovieFactory _movieFactory;
+    private readonly IRepository _repository;
+    private readonly IConsoleService _consoleService;
+    private readonly IMovieFactory _movieFactory;
 
     public MainService(IRepository repository, IConsoleService consoleService, IMovieFactory movieFactory)
     {
@@ -24,7 +24,6 @@ public class MainService : IMainService
 
         var userInput = _consoleService.GetString()?.ToLower();
 
-        var quit = false;
         do
         {
             switch (userInput)
@@ -44,11 +43,14 @@ public class MainService : IMainService
                 case "5":
                     DeleteMovie();
                     break;
-                case "x":
-                    quit = true;
-                    break;
             }
-        } while (!quit);
+
+            _consoleService.Write("Would you like to continue?");
+            DisplayMenu();
+
+            userInput = _consoleService.GetString()?.ToLower();
+
+        } while (userInput != null && !userInput.Equals("x"));
     }
 
     void ViewAllMovies()
@@ -63,6 +65,8 @@ public class MainService : IMainService
 
     void SearchMovies()
     {
+        _consoleService.Write("Enter your search below: ");
+        
         var input = _consoleService.GetString();
 
         var results = _repository.Search(input);
@@ -96,7 +100,7 @@ public class MainService : IMainService
 
     void DisplayMenu()
     {
-        _consoleService.Write("(1) View all movies" +
+        _consoleService.Write("(1) View all movies (Literally all)" +
                               "\n(2) Search movies" +
                               "\n(3) Update a movie" +
                               "\n(4) Add a movie" +

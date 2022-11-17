@@ -8,5 +8,5 @@ public interface IRepository
 
     IEnumerable<Movie> GetAll();
 
-    IEnumerable<Movie> Search(string searchString);
+    IEnumerable<Movie> Search(string? searchString);
 }

@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Logging;
 using MovieLibraryDB.Contexts;
 using MovieLibraryDB.Daos;
+using MovieLibraryDB.Factories;
 using MovieLibraryDB.Models;
 using MovieLibraryDB.Services;
 
@@ -19,9 +20,9 @@ public class Startup
             builder.AddFile("app.log");
         });
 
-
-        services.AddTransient<IMainService, MainService>();
-        services.AddSingleton<ILibrarian, Librarian>();
+        services.AddSingleton<IMainService, MainService>();
+        services.AddSingleton<IConsoleService, ConsoleService>();
+        services.AddSingleton<IMovieFactory, MovieFactory>();
         services.AddSingleton<IRepository, Repository>();
         services.AddDbContextFactory<MovieLibraryContext>();
 

@@ -15,17 +15,27 @@ public class Repository : IRepository, IDisposable
     
     public void Add(Movie movie)
     {
-        throw new NotImplementedException();
+        _context.Movies.Add(movie);
+        _context.SaveChanges();
+        
     }
 
     public IEnumerable<Movie> GetAll()
     {
-        throw new NotImplementedException();
+        return _context.Movies;
     }
 
-    public IEnumerable<Movie> Search(string searchString)
+    public IEnumerable<Movie> Search(string? searchString)
     {
-        throw new NotImplementedException();
+        var results = _context.Movies.ToList();
+        
+        foreach (var movie in _context.Movies.ToList()
+                     .Where(movie => !movie.Title.Contains(searchString, StringComparison.OrdinalIgnoreCase)))
+        {
+            results.Remove(movie);
+        }
+
+        return results;
     }
 
     public void Dispose()

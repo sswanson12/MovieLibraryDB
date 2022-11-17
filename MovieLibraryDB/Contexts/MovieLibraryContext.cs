@@ -7,7 +7,8 @@ namespace MovieLibraryDB.Contexts;
 public class MovieLibraryContext : DbContext
 {
     public DbSet<Genre> Genres { get; set; }
-    public DbSet<Movie> Movie { get; set; }
+    public DbSet<Movie> Movies { get; set; }
+    public DbSet<MovieGenre> MovieGenres { get; set; }
     
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
@@ -17,7 +18,7 @@ public class MovieLibraryContext : DbContext
             .Build();
 
         optionsBuilder.UseSqlServer(
-            configuration.GetConnectionString("MovieContext")
+            configuration.GetConnectionString("MovieLibraryContext")
         );
     }
 }

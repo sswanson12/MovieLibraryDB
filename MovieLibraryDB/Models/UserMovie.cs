@@ -8,4 +8,9 @@ public class UserMovie
 
     public virtual User User { get; set; }
     public virtual Movie Movie { get; set; }
+
+    public override string ToString()
+    {
+        return $"Id: {Id} - Rating: {Rating} - User: {User.Occupation.Name}{User.Id} - Movie: {Movie.Title}";
+    }
 }

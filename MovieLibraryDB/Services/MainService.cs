@@ -1,4 +1,5 @@
-﻿using MovieLibraryDB.Daos;
+﻿using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using MovieLibraryDB.Daos;
 using MovieLibraryDB.Factories;
 using MovieLibraryDB.Models;
 
@@ -11,14 +12,16 @@ public class MainService : IMainService
     private readonly IFactory<Movie> _movieFactory;
     private readonly IFactory<MovieGenre> _movieGenreFactory;
     private readonly IFactory<User> _userFactory;
+    private readonly IFactory<UserMovie> _userMovieFactory;
 
-    public MainService(IRepository repository, IConsoleService consoleService, IFactory<Movie> movieFactory, IFactory<MovieGenre> movieGenreFactory, IFactory<User> userFactory)
+    public MainService(IRepository repository, IConsoleService consoleService, IFactory<Movie> movieFactory, IFactory<MovieGenre> movieGenreFactory, IFactory<User> userFactory, IFactory<UserMovie> userMovieFactory)
     {
         _repository = repository;
         _consoleService = consoleService;
         _movieFactory = movieFactory;
         _movieGenreFactory = movieGenreFactory;
         _userFactory = userFactory;
+        _userMovieFactory = userMovieFactory;
     }
 
     public void Invoke()
@@ -55,7 +58,7 @@ public class MainService : IMainService
                     EnterRating();
                     break;
                 case "8":
-                    ViewTopRated();
+                    ViewAllRatings();
                     break;
             }
 
@@ -67,14 +70,50 @@ public class MainService : IMainService
         } while (!userInput.Equals("x"));
     }
 
-    private void ViewTopRated()
-    {
-        
-    }
-
     private void EnterRating()
     {
+        var newRating = _userMovieFactory.Create();
         
+        ViewAllUsers();
+
+        _consoleService.Write("Please enter the Id of the user rating the movie");
+
+        var userId = _consoleService.GetInt();
+
+        while (!_repository.GetUsers().Any(u => u.Id.Equals(userId)))
+        {
+            _consoleService.Write("Please enter a valid User Id: ");
+            userId = _consoleService.GetInt();
+        }
+
+        newRating.User = _repository.GetUsers().First(u => u.Id.Equals(userId));
+        
+        _consoleService.Write("Search for the movie you'd like to rate.");
+        SearchMovies();
+
+        _consoleService.Write("Please enter the Id of the movie being rated: ");
+        var movieId = _consoleService.GetInt();
+        
+        while (!_repository.GetMovies().Any(m => m.Id.Equals(movieId)))
+        {
+            _consoleService.Write("Please enter a valid Movie Id: ");
+            movieId = _consoleService.GetInt();
+        }
+
+        newRating.Movie = _repository.GetMovies().First(m => m.Id.Equals(movieId));
+
+        _consoleService.Write("Please enter a rating (1-5) for the movie: ");
+        var rating = _consoleService.GetInt();
+
+        while (rating is < 1 or > 5)
+        {
+            _consoleService.Write("Please enter an integer rating (1, 2, 3, 4, 5): ");
+            rating = _consoleService.GetInt();
+        }
+
+        newRating.Rating = rating;
+
+        _repository.Add(newRating);
     }
 
     private void ViewAllUsers()
@@ -94,6 +133,16 @@ public class MainService : IMainService
         for (int i = 0; i < 10; i++)
         {
             _consoleService.Write($"{movies[i]}\n");
+        }
+    }
+
+    private void ViewAllRatings()
+    {
+        var userMovies = _repository.GetUserMovies().OrderByDescending(u => u.Id).ToList();
+
+        for (int i = 0; i < 10; i++)
+        {
+            _consoleService.Write($"{userMovies[i]}\n");
         }
     }
 
@@ -167,7 +216,7 @@ public class MainService : IMainService
                     
                     while (!currentInput.Equals("x", StringComparison.OrdinalIgnoreCase))
                     {
-                        while (_repository.GetGenres().All(g => g.Name.Equals(currentInput, StringComparison.CurrentCultureIgnoreCase)))
+                        while (!_repository.GetGenres().Any(g => g.Name.Equals(currentInput, StringComparison.CurrentCultureIgnoreCase)))
                         {
                             _consoleService.Write("That does not match one of the existing genres. Please try again: ");
                             currentInput = _consoleService.GetString();
@@ -220,7 +269,7 @@ public class MainService : IMainService
 
         while (!currentInput.Equals("x", StringComparison.OrdinalIgnoreCase))
         {
-            while (_repository.GetGenres().All(g => g.Name.Equals(currentInput, StringComparison.CurrentCultureIgnoreCase)))
+            while (!_repository.GetGenres().Any(g => g.Name.Equals(currentInput, StringComparison.CurrentCultureIgnoreCase)))
             {
                 _consoleService.Write("That does not match one of the existing genres. Please try again: ");
                 currentInput = _consoleService.GetString();
@@ -285,7 +334,7 @@ public class MainService : IMainService
 
         var occupationInput = _consoleService.GetString();
         
-        while (_repository.GetOccupations().All(o => o.Name.Equals(occupationInput, StringComparison.CurrentCultureIgnoreCase)))
+        while (!_repository.GetOccupations().Any(o => o.Name.Equals(occupationInput, StringComparison.CurrentCultureIgnoreCase)))
         {
             _consoleService.Write("That does not match one of the existing occupations. Please try again: ");
             occupationInput = _consoleService.GetString();
@@ -300,9 +349,12 @@ public class MainService : IMainService
     {
         _consoleService.Write("(1) View the 10 most recently cataloged movies" +
                               "\n(2) Search movies" +
-                              "\n(3) Update a movie" +
                               "\n(4) Add a movie" +
-                              "\n(5) Delete a movie" +
+                              "\n(3) Update a movie" +
+                              "\n(5) Add a user" +
+                              "\n(6) View the 10 most recently cataloged users" +
+                              "\n(7) Enter a rating" +
+                              "\n(8) View the 10 most recently cataloged ratings" +
                               "\n(X) Quit");
     }
 }

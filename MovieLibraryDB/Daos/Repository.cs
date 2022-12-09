@@ -6,14 +6,11 @@ namespace MovieLibraryDB.Daos;
 
 public class Repository : IRepository, IDisposable
 {
-    private readonly IDbContextFactory<MovieLibraryContext> _contextFactory;
-
     private readonly MovieLibraryContext _context;
 
     public Repository(IDbContextFactory<MovieLibraryContext> contextFactory)
     {
-        _contextFactory = contextFactory;
-        _context = _contextFactory.CreateDbContext();
+        _context = contextFactory.CreateDbContext();
     }
     
     public void Add(Movie movie)
@@ -85,6 +82,11 @@ public class Repository : IRepository, IDisposable
         return _context.Users;
     }
 
+    public IEnumerable<UserMovie> GetUserMovies()
+    {
+        return _context.UserMovies;
+    }
+
     public IEnumerable<Occupation> GetOccupations()
     {
         return _context.Occupations;
@@ -94,7 +96,7 @@ public class Repository : IRepository, IDisposable
     {
         var allMovies = _context.Movies;
         var listOfMovies = allMovies.ToList();
-        return listOfMovies.Where(x => x.Title.Contains(searchString, StringComparison.CurrentCultureIgnoreCase));
+        return listOfMovies.Where(x => searchString != null && x.Title != null && x.Title.Contains(searchString, StringComparison.CurrentCultureIgnoreCase));
     }
 
     public void Dispose()

@@ -22,6 +22,8 @@ public interface IRepository
 
     IEnumerable<User> GetUsers();
 
+    IEnumerable<UserMovie> GetUserMovies();
+
     IEnumerable<Occupation> GetOccupations();
 
     IEnumerable<Movie> Search(string? searchString);

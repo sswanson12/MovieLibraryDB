@@ -26,6 +26,7 @@ public class Startup
         services.AddSingleton<IConsoleService, ConsoleService>();
         services.AddSingleton<IFactory<Movie>, MovieFactory>();
         services.AddSingleton<IFactory<User>, UserFactory>();
+        services.AddSingleton<IFactory<UserMovie>, UserMovieFactory>();
         services.AddSingleton<IFactory<MovieGenre>, MovieGenreFactory>();
         services.AddSingleton<IFactory<Genre>, GenreFactory>();
         services.AddSingleton<IRepository, Repository>();

@@ -10,6 +10,7 @@ public class Movie
 
     public override string ToString()
     {
-        return $"Id: {Id} - Title: {Title} - Release Date: {ReleaseDate} \nMovie Genres: {MovieGenres.Aggregate("", (current, genre) => current + $"{genre.Genre.Name}, ")}"[..^2] + ".";
+        return $"Id: {Id} - Title: {Title} - Release Date: {ReleaseDate} \n" +
+               $"Movie Genres: {MovieGenres.Aggregate("", (current, genre) => current + $"{genre.Genre.Name}, ")}"[..^2] + ".";
     }
 }

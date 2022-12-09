@@ -7,6 +7,9 @@ public class MovieFactory : IFactory<Movie>
 {
     public Movie Create()
     {
-        return new Movie();
+        return new Movie()
+        {
+            MovieGenres = new List<MovieGenre>()
+        };
     }
 }

@@ -6,7 +6,7 @@ public interface IConsoleService
 
     void WriteNoBreak(string message);
 
-    string? GetString();
+    string GetString();
 
     int GetInt();
 

@@ -16,9 +16,13 @@ public interface IRepository
 
     void Update(UserMovie update);
 
-    IEnumerable<Movie> GetAll();
+    IEnumerable<Movie> GetMovies();
 
     IEnumerable<Genre> GetGenres();
+
+    IEnumerable<User> GetUsers();
+
+    IEnumerable<Occupation> GetOccupations();
 
     IEnumerable<Movie> Search(string? searchString);
 }

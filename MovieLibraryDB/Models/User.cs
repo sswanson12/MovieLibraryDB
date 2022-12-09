@@ -9,4 +9,9 @@ public class User
 
     public virtual Occupation Occupation { get; set; }
     public virtual ICollection<UserMovie> UserMovies { get; set; }
+
+    public override string ToString()
+    {
+        return $"Id: {Id} - Age: {Age} - Gender: {Gender} - Zip Code: {ZipCode} - Occupation {Occupation.Name} - Ratings: {UserMovies.Count}";
+    }
 }

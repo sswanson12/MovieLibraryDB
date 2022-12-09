@@ -27,7 +27,7 @@ public class MainService : IMainService
                               "\nSelect what you'd like to do from the menu below.");
         DisplayMenu();
 
-        var userInput = _consoleService.GetString()?.ToLower();
+        var userInput = _consoleService.GetString().ToLower();
 
         do
         {
@@ -46,21 +46,50 @@ public class MainService : IMainService
                     AddMovie();
                     break;
                 case "5":
-                    DeleteMovie();
+                    AddUser();
+                    break;
+                case "6":
+                    ViewAllUsers();
+                    break;
+                case "7":
+                    EnterRating();
+                    break;
+                case "8":
+                    ViewTopRated();
                     break;
             }
 
             _consoleService.Write("Would you like to continue?");
             DisplayMenu();
 
-            userInput = _consoleService.GetString()?.ToLower();
+            userInput = _consoleService.GetString().ToLower();
 
-        } while (userInput != null && !userInput.Equals("x"));
+        } while (!userInput.Equals("x"));
+    }
+
+    private void ViewTopRated()
+    {
+        
+    }
+
+    private void EnterRating()
+    {
+        
+    }
+
+    private void ViewAllUsers()
+    {
+        var users = _repository.GetUsers().OrderByDescending(u => u.Id).ToList();
+
+        for (int i = 0; i < 10; i++)
+        {
+            _consoleService.Write($"{users[i]}\n");
+        }
     }
 
     void ViewAllMovies()
     {
-        var movies = _repository.GetAll().OrderByDescending(m => m.Id).ToList();
+        var movies = _repository.GetMovies().OrderByDescending(m => m.Id).ToList();
 
         for (int i = 0; i < 10; i++)
         {
@@ -92,17 +121,17 @@ public class MainService : IMainService
         
         var editId = _consoleService.GetInt();
 
-        while (!_repository.GetAll().Any(m => m.Id.Equals(editId)))
+        while (!_repository.GetMovies().Any(m => m.Id.Equals(editId)))
         {
             _consoleService.Write("That ID does not exist. Please enter another value: ");
             editId = _consoleService.GetInt();
         }
 
-        var editSelection = _repository.GetAll().First(m => m.Id.Equals(editId));
+        var editSelection = _repository.GetMovies().First(m => m.Id.Equals(editId));
 
         var control = "";
 
-        while (control != null && !control.Equals("x", StringComparison.CurrentCultureIgnoreCase))
+        while (!control.Equals("x", StringComparison.CurrentCultureIgnoreCase))
         {
             _consoleService.Write($"What would you like to change about the following movie?\n{editSelection}" +
                                   $"\n(1) Title - (2) ReleaseDate - (3) Genres - (X) Exit: ");
@@ -115,7 +144,7 @@ public class MainService : IMainService
         
                     var titleInput = _consoleService.GetString();
         
-                    while (_repository.GetAll().Any(m => m.Title.Equals(titleInput, StringComparison.CurrentCultureIgnoreCase)))
+                    while (_repository.GetMovies().Any(m => m.Title != null && m.Title.Equals(titleInput, StringComparison.CurrentCultureIgnoreCase)))
                     {
                         _consoleService.Write("That title already exists. Enter a different title: ");
                         titleInput = _consoleService.GetString();
@@ -170,7 +199,7 @@ public class MainService : IMainService
         
         var titleInput = _consoleService.GetString();
         
-        while (_repository.GetAll().Any(m => m.Title.Equals(titleInput, StringComparison.CurrentCultureIgnoreCase)))
+        while (_repository.GetMovies().Any(m => m.Title != null && m.Title.Equals(titleInput, StringComparison.CurrentCultureIgnoreCase)))
         {
             _consoleService.Write("That title already exists. Enter a different title: ");
             titleInput = _consoleService.GetString();
@@ -214,11 +243,59 @@ public class MainService : IMainService
         _repository.Add(newMovie);
     }
 
-    void DeleteMovie()
+    void AddUser()
     {
+        var newUser = _userFactory.Create();
         
-    }
+        _consoleService.Write("Please enter the user's age: ");
+        var ageInput = _consoleService.GetInt();
 
+        while (ageInput is <= 110 and < 0)
+        {
+            _consoleService.Write("Please enter a reasonable age: ");
+            ageInput = _consoleService.GetInt();
+        }
+
+        newUser.Age = ageInput;
+
+        _consoleService.Write("Please enter the user's gender: (M)/(F)");
+        var genderInput = _consoleService.GetString();
+
+        while ((!genderInput.Equals("M", StringComparison.CurrentCultureIgnoreCase) || genderInput.Equals("F", StringComparison.CurrentCultureIgnoreCase)))
+        {
+            _consoleService.Write("Please enter either (M) or (F): ");
+            genderInput = _consoleService.GetString();
+        }
+
+        newUser.Gender = genderInput;
+
+        _consoleService.Write("Please enter the user's zipcode: ");
+        var zipInput = _consoleService.GetString();
+
+        while (!(zipInput.Length is 5 && int.TryParse(zipInput, out _)))
+        {
+            _consoleService.Write("Ensure that you're entering a 5-digit integer: ");
+            zipInput = _consoleService.GetString();
+        }
+
+        newUser.ZipCode = zipInput;
+        
+        _consoleService.Write("Please enter an occupation for the user. Here is a list of known occupations: \n" +
+                              $"{_repository.GetOccupations().Aggregate("", (current, occupation) => current + $"{occupation.Name}, ")[..^2]}.");
+
+        var occupationInput = _consoleService.GetString();
+        
+        while (_repository.GetOccupations().All(o => o.Name.Equals(occupationInput, StringComparison.CurrentCultureIgnoreCase)))
+        {
+            _consoleService.Write("That does not match one of the existing occupations. Please try again: ");
+            occupationInput = _consoleService.GetString();
+        }
+
+        newUser.Occupation = _repository.GetOccupations()
+            .First(o => o.Name.Equals(occupationInput, StringComparison.CurrentCultureIgnoreCase));
+
+        _repository.Add(newUser);
+    }
     void DisplayMenu()
     {
         _consoleService.Write("(1) View the 10 most recently cataloged movies" +

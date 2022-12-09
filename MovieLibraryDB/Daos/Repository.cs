@@ -70,7 +70,7 @@ public class Repository : IRepository, IDisposable
         _context.SaveChanges();
     }
 
-    public IEnumerable<Movie> GetAll()
+    public IEnumerable<Movie> GetMovies()
     {
         return _context.Movies;
     }
@@ -78,6 +78,16 @@ public class Repository : IRepository, IDisposable
     public IEnumerable<Genre> GetGenres()
     {
         return _context.Genres;
+    }
+
+    public IEnumerable<User> GetUsers()
+    {
+        return _context.Users;
+    }
+
+    public IEnumerable<Occupation> GetOccupations()
+    {
+        return _context.Occupations;
     }
 
     public IEnumerable<Movie> Search(string? searchString)

@@ -12,9 +12,17 @@ public class ConsoleService : IConsoleService
         Console.Write(message);
     }
 
-    public string? GetString()
+    public string GetString()
     {
-        return Console.ReadLine();
+        var input = Console.ReadLine();
+
+        while (input is null)
+        {
+            Write("Enter a value: ");
+            input = Console.ReadLine();
+        }
+
+        return input;
     }
 
     public int GetInt()

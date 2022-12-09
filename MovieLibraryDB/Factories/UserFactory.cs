@@ -6,6 +6,9 @@ public class UserFactory : IFactory<User>
 {
     public User Create()
     {
-        return new User();
+        return new User()
+        {
+            UserMovies = new List<UserMovie>()
+        };
     }
 }

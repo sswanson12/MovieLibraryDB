@@ -1,5 +1,6 @@
 ﻿using MovieLibraryDB.Daos;
 using MovieLibraryDB.Factories;
+using MovieLibraryDB.Models;
 
 namespace MovieLibraryDB.Services;
 
@@ -7,9 +8,9 @@ public class MainService : IMainService
 {
     private readonly IRepository _repository;
     private readonly IConsoleService _consoleService;
-    private readonly IMovieFactory _movieFactory;
+    private readonly IFactory<Movie> _movieFactory;
 
-    public MainService(IRepository repository, IConsoleService consoleService, IMovieFactory movieFactory)
+    public MainService(IRepository repository, IConsoleService consoleService, IFactory<Movie> movieFactory)
     {
         _repository = repository;
         _consoleService = consoleService;
@@ -55,11 +56,11 @@ public class MainService : IMainService
 
     void ViewAllMovies()
     {
-        var movies = _repository.GetAll().ToList();
+        var movies = _repository.GetAll().OrderByDescending(m => m.Id).ToList();
 
-        foreach (var movie in movies)
+        for (int i = 0; i < 10; i++)
         {
-            _consoleService.Write($"Id: {movie.Id} - Title: {movie.Title} - Release Date: {movie.ReleaseDate}");
+            _consoleService.Write($"{movies[i]}\n");
         }
     }
 
@@ -73,7 +74,7 @@ public class MainService : IMainService
         
         foreach (var movie in results)
         {
-            _consoleService.Write($"Id: {movie.Id} - Title: {movie.Title} - Release Date: {movie.ReleaseDate}");
+            _consoleService.Write($"{movie}\n");
         }
     }
 
@@ -84,13 +85,24 @@ public class MainService : IMainService
 
     void AddMovie()
     {
-        _consoleService.Write("Please enter the movie title: ");
-        var title = _consoleService.GetString();
-
-        _consoleService.Write("Please enter the release date: ");
-        var releaseDate = _consoleService.GetDate();
+        _consoleService.Write("Please enter a title: ");
         
-        _repository.Add(_movieFactory.CreateMovie(title, releaseDate));
+        var titleInput = _consoleService.GetString();
+        
+        while (_repository.GetAll().Any(m => m.Title.Equals(titleInput, StringComparison.CurrentCultureIgnoreCase)))
+        {
+            _consoleService.Write("That title already exists. Enter a different title: ");
+            titleInput = _consoleService.GetString();
+        }
+
+        _consoleService.Write("Please enter the movie's release date: ");
+
+        var dateInput = _consoleService.GetDate();
+        
+        _consoleService.Write("Enter any genres pertaining to the movie.\n" +
+                              $"Available genres include: {_repository.GetGenres().Aggregate("", (current, genre) => current + $"{genre.Name}, ")[..^2]}.");
+        
+        
     }
 
     void DeleteMovie()
@@ -100,7 +112,7 @@ public class MainService : IMainService
 
     void DisplayMenu()
     {
-        _consoleService.Write("(1) View all movies (Literally all)" +
+        _consoleService.Write("(1) View the 10 most recently cataloged movies" +
                               "\n(2) Search movies" +
                               "\n(3) Update a movie" +
                               "\n(4) Add a movie" +

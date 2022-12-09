@@ -3,21 +3,10 @@ using MovieLibraryDB.Models;
 
 namespace MovieLibraryDB.Factories;
 
-public class MovieFactory : IMovieFactory
+public class MovieFactory : IFactory<Movie>
 {
-    private readonly IRepository _repository;
-
-    public MovieFactory(IRepository repository)
+    public Movie Create()
     {
-        _repository = repository;
-    }
-
-    public Movie CreateMovie(string? title, DateTime releaseDate)
-    {
-        return new Movie
-        {
-            Title = title,
-            ReleaseDate = releaseDate
-        };
+        return new Movie();
     }
 }

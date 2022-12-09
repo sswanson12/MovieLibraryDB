@@ -7,6 +7,11 @@ public class ConsoleService : IConsoleService
         Console.WriteLine(message);
     }
 
+    public void WriteNoBreak(string message)
+    {
+        Console.Write(message);
+    }
+
     public string? GetString()
     {
         return Console.ReadLine();

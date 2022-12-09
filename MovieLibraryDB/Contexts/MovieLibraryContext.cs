@@ -20,8 +20,9 @@ public class MovieLibraryContext : DbContext
             .AddJsonFile("appsettings.json")
             .Build();
 
-        optionsBuilder.UseSqlServer(
-            configuration.GetConnectionString("MovieLibraryContext")
+        optionsBuilder
+            .UseLazyLoadingProxies()
+            .UseSqlServer(configuration.GetConnectionString("MovieLibraryContext")
         );
     }
 }

@@ -14,6 +14,8 @@ public class Startup
     {
         IServiceCollection services = new ServiceCollection();
 
+        services.AddEntityFrameworkProxies();
+
         services.AddLogging(builder =>
         {
             builder.AddConsole();
@@ -22,7 +24,10 @@ public class Startup
 
         services.AddSingleton<IMainService, MainService>();
         services.AddSingleton<IConsoleService, ConsoleService>();
-        services.AddSingleton<IMovieFactory, MovieFactory>();
+        services.AddSingleton<IFactory<Movie>, MovieFactory>();
+        services.AddSingleton<IFactory<User>, UserFactory>();
+        services.AddSingleton<IFactory<MovieGenre>, MovieGenreFactory>();
+        services.AddSingleton<IFactory<Genre>, GenreFactory>();
         services.AddSingleton<IRepository, Repository>();
         services.AddDbContextFactory<MovieLibraryContext>();
 
